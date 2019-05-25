@@ -26,6 +26,19 @@ class Config(object):
     SESSION_USE_SIGNER = True
     SESSION_REDIS = redis.StrictRedis(host=REDIS_HOST,
                                       port=REDIS_PORT)
-    PERMANENT_SESSION_LIFETIME = 86400
+    PERMANENT_SESSION_LIFETIME = 86400   # session 的有效期，单位是秒
+
+class DevelopementConfig(Config):
+    """开发模式下的配置"""
+
+    DEBUG = True
+
+class ProductionConfig(Config):
+    """生产环境下的配置"""
+    pass
 
 
+config = {
+    "development":DevelopementConfig,
+    "production":ProductionConfig
+}

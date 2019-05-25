@@ -10,17 +10,18 @@
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
 
-from info import app,db
+from info import db, create_app
+
+
+
+# create_app 就类似于工厂方法
+app = create_app('development')
+
+from config import config
 
 manager = Manager(app)
-
-
-
 Migrate(app,db)
 manager.add_command('db',MigrateCommand)
-
-
-
 
 
 # 与以上的方法一致 +pymysql
