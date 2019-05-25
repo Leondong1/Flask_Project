@@ -7,6 +7,7 @@
 @Software: PyCharm
 '''
 import redis
+import logging
 
 
 class Config(object):
@@ -28,14 +29,21 @@ class Config(object):
                                       port=REDIS_PORT)
     PERMANENT_SESSION_LIFETIME = 86400   # session 的有效期，单位是秒
 
+    # 设置日志等级
+    LOG_LEVEL = logging.DEBUG
+
 class DevelopementConfig(Config):
     """开发模式下的配置"""
-
     DEBUG = True
 
 class ProductionConfig(Config):
     """生产环境下的配置"""
-    pass
+    LOG_LEVEL = logging.ERROR
+
+class DevelopementConfig(Config):
+    """单元测试环境下的配置"""
+    DEBUG = True
+    Testing = True
 
 
 config = {
