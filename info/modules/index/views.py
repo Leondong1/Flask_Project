@@ -6,8 +6,11 @@
 @File    : views.py
 @Software: PyCharm
 '''
+from flask import render_template
+
 from . import index_blu
 
 @index_blu.route('/index')
 def index():
-    return 'hello,leon'
+    return render_template('news/index.html')
+
