@@ -45,6 +45,10 @@ def create_app(config_name):
 
     Session(app)
 
+    # 注册蓝图
+    from info.modules.index import index_blu
+    app.register_blueprint(index_blu)
+
     return app
 
 def setup_log(config_name):

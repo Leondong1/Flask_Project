@@ -11,6 +11,8 @@ from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
 
 from info import db, create_app
+import pymysql
+from info import models
 
 
 
@@ -19,9 +21,14 @@ app = create_app('development')
 
 from config import config
 
+# 添加扩展命令行
+
 manager = Manager(app)
+
+# 数据库的迁移
 Migrate(app,db)
 manager.add_command('db',MigrateCommand)
+pymysql.install_as_MySQLdb()
 
 
 # 与以上的方法一致 +pymysql
@@ -29,10 +36,6 @@ manager.add_command('db',MigrateCommand)
 # pymysql.install_as_MySQLdb()
 # db.create_all()
 
-
-@app.route('/index')
-def index():
-    return 'hello,leon'
 
 
 if __name__ == '__main__':
