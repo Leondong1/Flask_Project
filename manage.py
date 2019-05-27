@@ -14,8 +14,6 @@ from info import db, create_app
 import pymysql
 from info import models
 
-
-
 # create_app 就类似于工厂方法
 app = create_app('development')
 
@@ -26,16 +24,14 @@ from config import config
 manager = Manager(app)
 
 # 数据库的迁移
-Migrate(app,db)
-manager.add_command('db',MigrateCommand)
+Migrate(app, db)
+manager.add_command('db', MigrateCommand)
 pymysql.install_as_MySQLdb()
-
 
 # 与以上的方法一致 +pymysql
 # import pymysql
 # pymysql.install_as_MySQLdb()
 # db.create_all()
-
 
 
 if __name__ == '__main__':

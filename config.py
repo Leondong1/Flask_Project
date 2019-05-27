@@ -27,18 +27,21 @@ class Config(object):
     SESSION_USE_SIGNER = True
     SESSION_REDIS = redis.StrictRedis(host=REDIS_HOST,
                                       port=REDIS_PORT)
-    PERMANENT_SESSION_LIFETIME = 86400   # session 的有效期，单位是秒
+    PERMANENT_SESSION_LIFETIME = 86400  # session 的有效期，单位是秒
 
     # 设置日志等级
     LOG_LEVEL = logging.DEBUG
+
 
 class DevelopementConfig(Config):
     """开发模式下的配置"""
     DEBUG = True
 
+
 class ProductionConfig(Config):
     """生产环境下的配置"""
     LOG_LEVEL = logging.ERROR
+
 
 class DevelopementConfig(Config):
     """单元测试环境下的配置"""
@@ -47,6 +50,6 @@ class DevelopementConfig(Config):
 
 
 config = {
-    "development":DevelopementConfig,
-    "production":ProductionConfig
+    "development": DevelopementConfig,
+    "production": ProductionConfig
 }
