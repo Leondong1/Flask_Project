@@ -39,4 +39,5 @@ pymysql.install_as_MySQLdb()
 
 
 if __name__ == '__main__':
+    # print(app.url_map)
     manager.run()
