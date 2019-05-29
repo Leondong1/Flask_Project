@@ -6,13 +6,24 @@
 @File    : views.py
 @Software: PyCharm
 '''
-from flask import render_template, current_app
+from flask import render_template, current_app, session
 
+from info.models import User
 from . import index_blu
 
 @index_blu.route('/')
 def index():
-    return render_template('news/index.html')
+    # 获取到当前登录用户的id
+    user_id = session.get("user_id",None)
+    # 通过id获取用户信息
+    user =None
+    if user_id:
+        try:
+            user = User.query.get(user_id)
+        except Exception as e:
+            current_app.logger.error(e)
+
+    return render_template('news/index.html',data = {"user_info":user.to_dict() if user else None})
 
 
 # 在打开网页的时候，浏览器会默认去请求根路径 +favicon.ico作网站标签的小图标

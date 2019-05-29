@@ -18,6 +18,8 @@ class Config(object):
 
     SQLALCHEMY_DATABASE_URI = "mysql+pymysql://root:dongjie931207@127.0.0.1:3306/news_information"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_COMMIT_ON_TEARDOWN = True
+
     # redis 配置
     REDIS_HOST = '127.0.0.1'
     REDIS_PORT = 6379

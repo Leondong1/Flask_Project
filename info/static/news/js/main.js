@@ -34,7 +34,7 @@ $(function(){
 
 	// 点击输入框，提示文字上移
 	$('.form_group').on('click focusin',function(){
-		$(this).children('.input_tip').animate({'top':-5,'font-size':12},'fast').siblings('input').focus().parent().addClass('hotline');
+		$(this).children('.input_tip').animate({'top':-5,'font-size':12},'fast').parent().addClass('hotline');
 	})
 
 	// 输入框失去焦点，如果输入框为空，则提示文字下移
@@ -110,6 +110,29 @@ $(function(){
         }
 
         // 发起登录请求
+        var params = {
+        "mobile": mobile,
+        "password": password,
+    }
+
+    $.ajax({
+        url:"/passport/login",
+        type: "post",
+        data: JSON.stringify(params),
+        headers:{
+          "X-CSRFToken":getCookie('csrf_token')
+        },
+        contentType: "application/json",
+        success: function (resp) {
+            if (resp.errno == "0") {
+                // 刷新当前界面
+                location.reload();
+            }else {
+                $("#login-password-err").html(resp.errmsg)
+                $("#login-password-err").show()
+            }
+        }
+    })
     })
 
 
@@ -144,6 +167,30 @@ $(function(){
         }
 
         // 发起注册请求
+        var params = {
+		    "mobile":mobile,
+            "smscode":smscode,
+            "password":password,
+        }
+
+		$.ajax({
+            url:"/passport/register",
+        type: "post",
+        data: JSON.stringify(params),
+        headers: {
+            'X-CSRFToken': getCookie("csrf_token")
+        },
+        contentType: "application/json",
+        success: function (resp) {
+            if (resp.errno == "0"){
+                // 刷新当前界面
+                    location.reload()
+            }else {
+                $("#register-password-err").html(resp.errmsg)
+                $("#register-password-err").show()
+            }
+        }
+        })
 
     })
 })
@@ -180,7 +227,56 @@ function sendSMSCode() {
         return;
     }
 
-    // TODO 发送短信验证码
+    //  发送短信验证码
+    var params = {
+        "mobile":mobile,
+        "image_code":imageCode,
+        "image_code_id":imageCodeId
+    }
+
+    $.ajax({
+    //    请求地址
+        url:"/passport/smscode",
+        method:"POST",
+        data:JSON.stringify(params),
+        contentType:"application/json",
+        headers: {
+            'X-CSRFToken': getCookie("csrf_token")
+        },
+        dataType:'json',
+        success:function (resp) {
+            if (resp.errno == "0"){
+                var num = 60;
+                var t = setInterval(function () {
+                    if (num == 1){
+                        clearInterval(t);
+                        $(".get_code").html("获取验证码");
+                        $(".get_code").attr("onclick",
+                            "sendSMSCode();");
+                    }else{
+                        num -= 1;
+                        $(".get_code").html(num + "秒");
+                    }
+                },1000,60)
+            }else{
+            //    表示后端出现了错误，可以将错误信息展示到前端页面中
+                $("#register-sms-code-err").html(resp.errmsg);
+                $("#register-sms-code-err").show();
+
+                $(".get_code").attr("onclick","sendSMSCode();");
+                if (resp.errno == "4004") {
+                    generateImageCode()
+                }
+            }
+
+        }
+    })
+}
+
+function logout() {
+    $.get('/passport/logout',function (resp) {
+        location.reload()
+    })
 }
 
 // 调用该函数模拟点击左侧按钮

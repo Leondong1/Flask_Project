@@ -15,6 +15,8 @@ from flask_migrate import Migrate, MigrateCommand
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import CSRFProtect
 from flask_session import Session
+from flask_wtf.csrf import generate_csrf
+
 from config import config
 
 db = SQLAlchemy()
@@ -31,19 +33,24 @@ def create_app(config_name):
 
     db.init_app(app)
 
-
-
     Migrate(app,db)
 
     global redis_store
 
     redis_store = redis.StrictRedis(host=config[config_name].REDIS_HOST,
-                                    port=config[config_name].REDIS_PORT)
+                                    port=config[config_name].REDIS_PORT,)
     # redis_store.set('123456', 'leon')
 
     CSRFProtect(app)
 
     Session(app)
+
+    @app.after_request
+    def after_request(response):
+        csrf_token = generate_csrf()
+        response.set_cookie("csrf_token",csrf_token)
+        return response
+
 
     # 注册蓝图
     from info.modules.index import index_blu
