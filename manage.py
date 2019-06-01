@@ -3,7 +3,7 @@
 @Time    : 2019-05-23 19:59
 @Author  : Leon
 @Contact : wangdongjie1994@gmail.com
-@File    : manage.py.py
+@File    : manage.py
 @Software: PyCharm
 '''
 

@@ -19,6 +19,7 @@ from flask_wtf.csrf import generate_csrf
 
 from config import config
 
+# 初始化数据库，在flask很多的扩展里面，咱们可以先初始化扩展的对象，然后再调用 init_app 去初始化
 db = SQLAlchemy()
 redis_store = None
 
@@ -29,8 +30,10 @@ def create_app(config_name):
 
     app = Flask(__name__)
 
+    # 通过名字加载指定的配置信息
     app.config.from_object(config[config_name])
 
+    # 通过app初始化
     db.init_app(app)
 
     Migrate(app,db)

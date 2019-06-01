@@ -26,10 +26,12 @@ class Config(object):
 
     # flask_session 的配置信息
     SESSION_TYPE = "redis"
+    # 开启session签名，使得咱们的session 更加严密，具有保护功能
     SESSION_USE_SIGNER = True
     SESSION_REDIS = redis.StrictRedis(host=REDIS_HOST,
                                       port=REDIS_PORT)
-    PERMANENT_SESSION_LIFETIME = 86400  # session 的有效期，单位是秒
+    # 设置session的过期时间
+    PERMANENT_SESSION_LIFETIME = 86400 * 2  # session 的有效期，单位是秒  此时代表两天
 
     # 设置日志等级
     LOG_LEVEL = logging.DEBUG
@@ -51,6 +53,7 @@ class DevelopementConfig(Config):
     Testing = True
 
 
+# 通过咱们的字典形式保存咱们的配置信息
 config = {
     "development": DevelopementConfig,
     "production": ProductionConfig
