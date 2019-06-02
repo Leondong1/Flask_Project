@@ -39,7 +39,7 @@ def index():
     categories = Category.query.all()
     categories_dicts = []
     for category in categories:
-        categories.append(category.to_dict())
+        categories_dicts.append(category.to_dict())
 
     return render_template('news/index.html',data = {"user_info":user.to_dict() if user else None,
                                                      "click_new_list":click_new_list,

@@ -23,6 +23,8 @@ from config import config
 db = SQLAlchemy()
 redis_store = None
 
+# 注意外界的导入不能导入局部变量
+# 整个操作的目的是为了咱们的信息加载是从外界传递的，因为咱们的info目录上线后一般不做修改
 def create_app(config_name):
 
     # 配置项目日志
@@ -33,9 +35,10 @@ def create_app(config_name):
     # 通过名字加载指定的配置信息
     app.config.from_object(config[config_name])
 
-    # 通过app初始化
+    # app初始化
     db.init_app(app)
 
+    # 数据库的迁移
     Migrate(app,db)
 
     global redis_store
