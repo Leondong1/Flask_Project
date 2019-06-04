@@ -28,6 +28,7 @@ def get_image_code():
     :return:
     """
     # 1.获取到当前的图片编号id
+    # agrs: 取到 url ? 后面的参数
     code_id = request.args.get('code_id')
     # 2.生成验证码
     name, text, image = captcha.generate_captcha()
@@ -38,10 +39,10 @@ def get_image_code():
     except Exception as e:
         current_app.logger.error(e)
         return make_response(jsonify(errno=RET.DATAERR, errmsg='保存图片验证码失败'))
-
+    # 返回验证码图片
     resp = make_response(image)
 
-    #     设置响应内容
+    #  设置数据的类型，以便浏览器能够更加智能的识别其是什么类型
     resp.headers['Content-Type'] = 'image/jpg'
     return resp
 
@@ -50,7 +51,7 @@ def get_image_code():
 def send_sms():
     """
         1. 接收参数并判断是否有值
-        2. 校验手机号是正确
+        2. 校验手机号是正确（因为数据是由前端发送过来的，因此，需要判断）
         3. 通过传入的图片编码去redis中查询真实的图片验证码内容
         4. 进行验证码内容的比对
         5. 生成发送短信的内容并发送短信
@@ -58,15 +59,18 @@ def send_sms():
         7. 返回发送成功的响应
         :return:
     """
+    # 以下两种方式均是将咱们的 json 字符串转化为 字典的形式（便于操作）
+    # args_data = json.loads(request.data)
     args_data = request.json
+    # 获取参数
     mobile = args_data.get('mobile')
     image_code = args_data.get('image_code')
     image_code_id = args_data.get('image_code_id')
-
+    # 校验参数 （参数是否有值，参数内容是否正确）
     if not all([mobile, image_code, image_code_id]):
-        #         参数不全
+        #  参数不全
         return jsonify(errno=RET.PARAMERR, errmsg='参数不全')
-
+    # 因为前段给咱们传过来的数据我们无法控制
     if not re.match("^1[3578][0-9]{9}$", mobile):
         return jsonify(errno=RET.DATAERR, errmsg='手机号不正确')
 
@@ -97,6 +101,7 @@ def send_sms():
 
     # 5.生成短信的内容并发送短信
     result = random.randint(0, 999999)
+    # 保证生成一个6位数
     sms_code = "%06d" % result
     current_app.logger.debug('短信验证码的内容：%s' % sms_code)
     result = CCP().send_template_sms(mobile, [sms_code,
@@ -144,7 +149,7 @@ def register():
         return jsonify(errno=RET.DBERR, errmsg="获取本地验证码失败")
 
     if not real_sms_code:
-        #         短信验证码过期
+        # 短信验证码过期
         return jsonify(errno=RET.NODATA, errmsg="短信验证码过期")
 
     real_sms_code = real_sms_code.decode()
@@ -157,8 +162,10 @@ def register():
     user = User()
     user.nick_name = mobile
     user.mobile = mobile
+    # 记录用户最后一次的登录时间
     user.last_login = datetime.now()
     # 对密码进行处理
+    # 在设置password的时候，对password进行加密，并且将加密的结果给 user.password_hash 赋值
     user.password = password
 
 
@@ -172,12 +179,12 @@ def register():
 
         return jsonify(errno=RET.DATAERR, errmsg="数据保存错误")
 
-    #     5. 保存用户登录状态
+    # 5. 保存用户登录状态  (为什么有用户的user_id 这是咱们的 数据库的模型所体现的)
     session["user_id"] = user.id
     session["nick_name"] = user.nick_name
     session["mobile"] = user.mobile
 
-    #     6.返回注册结果
+    # 6.返回注册结果
     return jsonify(errno=RET.OK, errmsg="OK")
 
 
@@ -202,6 +209,7 @@ def login():
     if not all([mobile, password]):
         return jsonify(errno=RET.PARAMERR, errmsg="参数不全")
 
+    # 仅仅只是一个查询的语句
     try:
         user = User.query.filter_by(mobile=mobile).first()
     except Exception as e:
@@ -211,13 +219,14 @@ def login():
     if not user:
         return jsonify(errno=RET.USERERR, errmsg="用户不存在")
 
+    # 校验登录的密码和当前用户的密码是否一致
     if not user.check_passowrd(password):
         return jsonify(errno=RET.PWDERR, errmsg="密码错误")
 
     session["user_id"] = user.id
     session["nick_name"] = user.nick_name
     session["mobile"] = user.mobile
-
+    #  记录用户最后一次的登录时间
     user.last_login = datetime.now()
 
     try:
@@ -229,10 +238,11 @@ def login():
 
     return jsonify(errno=RET.OK, errmsg="OK")
 
-@passport_blu.route("/logout",methods = ['POST'])
+@passport_blu.route("/logout")
 def logout():
     """
     清除session中的对应登录之后保存的信息
+    pop 移除数据，会有一个返回值，如果要移除的key不存在，就返回None
     :return:
     """
     session.pop('user_id',None)

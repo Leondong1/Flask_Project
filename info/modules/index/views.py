@@ -8,7 +8,7 @@
 '''
 from flask import render_template, current_app, session
 
-from info import constants
+from info import constants, redis_store
 from info.models import User, News, Category
 from . import index_blu
 
@@ -18,6 +18,7 @@ def index():
     # 获取到当前登录用户的id
     user_id = session.get("user_id",None)
     # 通过id获取用户信息
+    # 加上这句的含义是 因为即使后面 没有查到user,也不影响咱们的程序正常执行
     user =None
     if user_id:
         try:
@@ -27,12 +28,15 @@ def index():
 
     # 右侧新闻排行的逻辑
     new_list = None
+    # 该语句查询出来的是一个模型，及对应一个对象
     try:
         news_list = News.query.order_by(News.clicks.desc()).limit(constants.CLICK_RANK_MAX_NEWS)
     except Exception as e:
         current_app.logger.error(e)
 
+    # 定义一个空的字典列表，里面装的就是字典
     click_new_list = []
+    # 遍历对象列表，将对象的字典添加到字典列表中
     for news in news_list if news_list else []:
         click_new_list.append(news.to_basic_dict())
 

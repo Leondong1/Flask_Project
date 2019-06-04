@@ -93,7 +93,7 @@ $(function(){
 		$(this).find('a')[0].click()
 	})
 
-    // TODO 登录表单提交
+    //  登录表单提交
     $(".login_form_con").submit(function (e) {
         e.preventDefault()
         var mobile = $(".login_form #mobile").val()
@@ -136,7 +136,7 @@ $(function(){
     })
 
 
-    // TODO 注册按钮点击
+    //  注册按钮点击
     $(".register_form_con").submit(function (e) {
         // 阻止默认提交操作
         e.preventDefault()
@@ -166,7 +166,7 @@ $(function(){
             return;
         }
 
-        // 发起注册请求
+        // 发起注册请求  此时是一个对象的存储形似
         var params = {
 		    "mobile":mobile,
             "smscode":smscode,

@@ -15,6 +15,7 @@ import pymysql
 from info import models
 
 # create_app 就类似于工厂方法
+# 这里的 'development' 就相当于咱们的 config_name
 app = create_app('development')
 
 from config import config
